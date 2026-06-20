@@ -1,0 +1,150 @@
+<div id="warriors-world">
+  <!-- Title Screen & Detailed Cat Developer Studio -->
+  <div id="home-screen">
+    <div class="menu-box">
+      <h1>WARRIOR CATS: THE LIVING MAP</h1>
+      <p class="subtitle">Design your genetic look, load clan files, and cross open borders.</p>
+      
+      <div class="creator-panel">
+        <h3>Advanced Cat Developer Studio</h3>
+        
+        <!-- Name Suffix Generation Options -->
+        <div class="input-group">
+          <label for="dev-prefix">Name Prefix:</label>
+          <input type="text" id="dev-prefix" value="Fire" maxlength="12">
+        </div>
+
+        <div class="input-group">
+          <label for="dev-suffix">Name Suffix:</label>
+          <select id="dev-suffix">
+            <option value="paw">paw (Apprentice)</option>
+            <option value="heart">heart (Loyal Warrior)</option>
+            <option value="claw">claw (Aggressive Fighter)</option>
+            <option value="pelt">pelt (Thick Fur)</option>
+            <option value="flight">flight (Agile Tracker)</option>
+            <option value="leaf">leaf (Medicine Mind)</option>
+            <option value="star">star (Clan Leader)</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <label for="dev-clan">Clan Allegiance:</label>
+          <select id="dev-clan">
+            <option value="ThunderClan">ThunderClan (Forest)</option>
+            <option value="ShadowClan">ShadowClan (Marsh)</option>
+            <option value="WindClan">WindClan (Moor)</option>
+            <option value="RiverClan">RiverClan (River)</option>
+          </select>
+        </div>
+
+        <!-- Advanced Body Type Customization -->
+        <div class="input-group">
+          <label for="dev-body">Physical Build / Frame:</label>
+          <select id="dev-body">
+            <option value="standard">Standard Balanced Frame</option>
+            <option value="sleek">Sleek Long-Legged (WindClan Speed)</option>
+            <option value="massive">Massive Broad-Shouldered (Tigerstar Build)</option>
+            <option value="frail">Frail / Diminutive Petite Frame</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="dev-color">Base Coat Color:</label>
+          <select id="dev-color">
+            <option value="#d66a22">Ginger Flame</option>
+            <option value="#3a3a3a">Charcoal Gray</option>
+            <option value="#fafafa">Snow White</option>
+            <option value="#5a3d28">Dark Brown Wood</option>
+            <option value="#b0bec5">Silver Blue Glimmer</option>
+            <option value="#795548">Rich Chocolate</option>
+            <option value="#d7ccc8">Pale Milk Cream</option>
+            <option value="#cfd8dc">Mist Pale Gray</option>
+            <option value="#f5b041">Golden Fawn Amber</option>
+            <option value="#1a1a1a">Coal Jet Black</option>
+            <option value="#e5c158">Pale Yellow Honey</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="dev-pattern">Fur Pattern Matrix:</label>
+          <select id="dev-pattern">
+            <option value="solid">Solid Solid Coat</option>
+            <option value="tabby">Classic Mackerel Tabby Stripes</option>
+            <option value="calico">Calico Blotched Patches</option>
+            <option value="siamese">Siamese Dark Point Markings</option>
+            <option value="tortie">Tortoiseshell Mottled Swirls</option>
+            <option value="bicolor">Bi-Color Tuxedo Chest</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="dev-eyes">Eye Customization:</label>
+          <select id="dev-eyes">
+            <option value="#4caf50">Leaf Green</option>
+            <option value="#1b5e20">Deep Holly Dark Green</option>
+            <option value="#2196f3">Ice Pool Blue</option>
+            <option value="#0d47a1">Jay Sapphire Blue</option>
+            <option value="#ffeb3b">Bright Sunset Amber</option>
+            <option value="#e65100">Dark Copper Fire</option>
+            <option value="#b2ff59">Pale Gooseberry Yellow-Green</option>
+            <option value="#9c27b0">StarClan Spirit Violet</option>
+            <option value="hetero">Odd-Eyed Blue and Amber</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="dev-markings">Lore Markings & Modifications:</label>
+          <select id="dev-markings">
+            <option value="none">None (Clean StarClan Coat)</option>
+            <option value="ear-notch">Torn Ear Notch</option>
+            <option value="eye-scar">Vertical Blind Eye Scar (Longtail Mark)</option>
+            <option value="white-socks">Four Pristine White Paws</option>
+            <option value="white-muzzle">White Muzzle and Head Flash</option>
+            <option value="belly-patch">White Underbelly Patch</option>
+            <option value="shoulder-scar">Deep Scabbed Shoulder Scar</option>
+            <option value="docked-tail">Short Cropped Docked Tail</option>
+            <option value="broken-jaw">Crooked Broken Jaw Alignment</option>
+            <option value="twisted-foot">Twisted Malformed Paw (Deadfoot Trait)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="menu-actions">
+        <button class="menu-btn start" onclick="launchGame(false)">Spawn Custom Cat</button>
+        <button class="menu-btn load" onclick="launchGame(true)">Load Saved Life</button>
+      </div>
+
+      <!-- Historical Record Profile Board -->
+      <div id="history-board">
+        <h4>Lineage History Records</h4>
+        <ul id="history-list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Simulation Interface -->
+  <div id="simulation-view" class="hidden">
+    <header id="game-hud">
+      <div class="hud-item">Cat: <span id="hud-name">Cat</span></div>
+      <div class="hud-item">Territory: <span id="hud-zone">ThunderClan Forest</span></div>
+      <div class="hud-item">Nourishment: <span id="hud-hunger">100</span>%</div>
+      <div class="hud-item">Pile: <span id="hud-prey">0</span></div>
+      <button class="save-btn" onclick="saveCurrentLife()">Save Life</button>
+    </header>
+
+    <!-- The 2D Graphic Engine Render Surface -->
+    <div id="canvas-container">
+      <canvas id="gameCanvas" width="800" height="500"></canvas>
+    </div>
+
+    <!-- Mobile Virtual D-Pad Overlay -->
+    <div id="mobile-controls">
+      <button class="dpad-btn up" id="btn-up">UP</button>
+      <button class="dpad-btn left" id="btn-left">LEFT</button>
+      <button class="dpad-btn down" id="btn-down">DOWN</button>
+      <button class="dpad-btn right" id="btn-right">RIGHT</button>
+    </div>
+
+    <div id="live-ticker">Welcome to the boundary lines. Move across the map using your keyboard or the on-screen touch D-pad.</div>
+  </div>
+</div>
