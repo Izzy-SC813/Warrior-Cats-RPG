@@ -1,3 +1,10 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0a0c0a;
+  overflow-x: hidden;
+}
+
 #warriors-world {
   width: 100%;
   max-width: 850px;
@@ -15,6 +22,7 @@
   border: 3px double #d4af37;
   border-radius: 8px;
   text-align: center;
+  margin-top: 10px;
 }
 
 .menu-box h1 {
@@ -64,33 +72,10 @@
   color: #fff;
   border: 1px solid #555;
   padding: 6px;
-  width: 220px;
+  width: 240px;
   border-radius: 4px;
   font-family: monospace;
-}
-
-#history-board {
-  margin-top: 20px;
-  background: rgba(0,0,0,0.3);
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px dashed #444;
-  text-align: left;
-  max-width: 460px;
-  margin: 20px auto 0 auto;
-}
-
-#history-board h4 {
-  margin: 0 0 5px 0;
-  font-size: 0.9rem;
-  color: #d4af37;
-}
-
-#history-list {
-  margin: 0;
-  padding-left: 15px;
-  font-size: 0.8rem;
-  color: #cbd5e0;
+  box-sizing: border-box;
 }
 
 .menu-actions {
@@ -119,6 +104,7 @@
   padding: 8px;
   border: 1px solid #333;
   font-size: 0.85rem;
+  margin-top: 5px;
 }
 
 #canvas-container {
@@ -136,6 +122,7 @@ canvas {
   background: #222;
   max-width: 100%;
   height: auto;
+  display: block;
 }
 
 #mobile-controls {
@@ -144,7 +131,7 @@ canvas {
     ".    up    ."
     "left .     right"
     ".    down  .";
-  grid-template-columns: repeat(3, 60px);
+  grid-template-columns: repeat(3, 70px);
   grid-template-rows: repeat(3, 50px);
   gap: 5px;
   justify-content: center;
@@ -181,7 +168,7 @@ canvas {
 .save-btn { background: #a0522d; color: white; border: none; padding: 4px 8px; cursor: pointer; border-radius: 3px; font-family: monospace; }
 .hidden { display: none !important; }
 
-@media(max-width: 600px) {
+@media(max-width: 650px) {
   .input-group { flex-direction: column; align-items: flex-start; gap: 4px; }
   .input-group input, .input-group select { width: 100%; }
 }
