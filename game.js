@@ -1,7 +1,7 @@
 let canvas, ctx;
 let gameActive = false;
 
-// Base configuration node loaded dynamically
+// Global Character State Object Core
 let catPlayer = {
   x: 200,
   y: 250,
@@ -9,7 +9,6 @@ let catPlayer = {
   speed: 3.5,
   name: "Firepaw",
   clan: "ThunderClan",
-  bodyStyle: "standard",
   furColor: "#d66a22",
   pattern: "solid",
   eyeColor: "#4caf50",
@@ -20,63 +19,15 @@ let catPlayer = {
 
 let keysPressed = {};
 let preyEntities = [];
-let pastLineages = [];
 const BORDER_X = 400;
 
+// World Static Collision Arrays
 const MAP_OBSTACLES = [
   { x: 50, y: 70, width: 60, height: 60, name: "Highrocks Point" },
   { x: 670, y: 340, width: 80, height: 60, name: "Carrionplace Grid" },
   { x: 100, y: 380, width: 120, height: 30, name: "River Deep Skerries" },
   { x: 550, y: 80, width: 90, height: 40, name: "Moor Rock Gorse Pile" }
 ];
-
-// Sound Synthesizer Node Engine via Web Audio API 
-const AudioEngine = {
-  ctx: null,
-  init() {
-    if (!this.ctx) {
-      this.ctx = new (window.AudioEngineContext || window.AudioContext)();
-    }
-  },
-  playTone(freq, type, duration) {
-    this.init();
-    if (!this.ctx) return;
-    try {
-      let osc = this.ctx.createOscillator();
-      let gainNode = this.ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-      gainNode.gain.setValueAtTime(0.15, this.ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-      osc.connect(gainNode);
-      gainNode.connect(this.ctx.destination);
-      osc.start();
-      osc.stop(this.ctx.currentTime + duration);
-    } catch (e) { console.log("Audio contextual block safety active"); }
-  },
-  chirp() { this.playTone(880, "sine", 0.08); setTimeout(() => this.playTone(1320, "sine", 0.05), 40); },
-  rustle() { this.playTone(180, "triangle", 0.15); },
-  thud() { this.playTone(90, "sawtooth", 0.2); }
-};
-
-// Initial document rendering pipeline setup
-window.addEventListener("DOMContentLoaded", () => {
-  loadLineageHistory();
-});
-
-function loadLineageHistory() {
-  const store = localStorage.getItem("warrior_clans_history_manifest");
-  if (store) {
-    pastLineages = JSON.parse(store);
-    const container = document.getElementById("history-list");
-    container.innerHTML = "";
-    pastLineages.slice(-5).reverse().forEach(cat => {
-      let li = document.createElement("li");
-      li.innerText = `${cat.name} of ${cat.clan} - Caught: ${cat.freshKillPile} prey items`;
-      container.appendChild(li);
-    });
-  }
-}
 
 function launchGame(isLoadMode) {
   document.getElementById("home-screen").classList.add("hidden");
@@ -86,9 +37,9 @@ function launchGame(isLoadMode) {
   ctx = canvas.getContext("2d");
 
   if (isLoadMode) {
-    const savedData = localStorage.getItem("warrior_cat_studio_life_v5");
+    const savedData = localStorage.getItem("github_warrior_cat_life_v5");
     if (!savedData) {
-      alert("No previous lives found in this browser cache. Spawning a new cat instead!");
+      alert("No previous lives found in your browser's local cache. Spawning a new cat instead!");
       readMenuFormFields();
     } else {
       catPlayer = JSON.parse(savedData);
@@ -103,28 +54,17 @@ function launchGame(isLoadMode) {
   document.getElementById("hud-prey").innerText = catPlayer.freshKillPile;
   document.getElementById("hud-hunger").innerText = Math.floor(catPlayer.hunger);
 
-  // Apply build configuration modifications dynamically
-  if (catPlayer.bodyStyle === "massive") { catPlayer.size = 21; catPlayer.speed = 2.8; }
-  else if (catPlayer.bodyStyle === "sleek") { catPlayer.size = 14; catPlayer.speed = 4.5; }
-  else if (catPlayer.bodyStyle === "frail") { catPlayer.size = 12; catPlayer.speed = 3.3; }
-  else { catPlayer.size = 16; catPlayer.speed = 3.5; }
-
-  // Check for Broken/Twisted leg modifications
-  if (catPlayer.marking === "twisted-foot") { catPlayer.speed *= 0.65; }
-
   gameActive = true;
   setupInputHandlers();
   window.requestAnimationFrame(runGameLoop);
   
-  AudioEngine.chirp();
+  document.getElementById("live-ticker").innerText = `Success! Spawned ${catPlayer.name} into the territory. Hunt prey to maintain your nourishment.`;
 }
 
 function readMenuFormFields() {
   const prefix = document.getElementById("dev-prefix").value || "Custom";
-  const suffix = document.getElementById("dev-suffix").value;
-  catPlayer.name = prefix + suffix;
+  catPlayer.name = prefix + "paw";
   catPlayer.clan = document.getElementById("dev-clan").value;
-  catPlayer.bodyStyle = document.getElementById("dev-body").value;
   catPlayer.furColor = document.getElementById("dev-color").value;
   catPlayer.pattern = document.getElementById("dev-pattern").value;
   catPlayer.eyeColor = document.getElementById("dev-eyes").value;
@@ -138,7 +78,7 @@ function readMenuFormFields() {
 
 function generatePreyEcosystem() {
   preyEntities = [];
-  for (let i = 0; i < 18; i++) {
+  for (let i = 0; i < 20; i++) {
     let targetX = Math.random() * (canvas.width - 40) + 20;
     let targetY = Math.random() * (canvas.height - 40) + 20;
     let type = "Mouse";
@@ -178,8 +118,8 @@ function setupInputHandlers() {
   binds.forEach(bind => {
     const el = document.getElementById(bind.id);
     if(el) {
-      el.addEventListener("touchstart", (e) => { e.preventDefault(); keysPressed[bind.key] = true; });
-      el.addEventListener("touchend", (e) => { e.preventDefault(); keysPressed[bind.key] = false; });
+      el.addEventListener("touchstart", (e) => { e.preventDefault(); keysPressed[bind.key] = true; }, {passive: false});
+      el.addEventListener("touchend", (e) => { e.preventDefault(); keysPressed[bind.key] = false; }, {passive: false});
       el.addEventListener("mousedown", () => { keysPressed[bind.key] = true; });
       el.addEventListener("mouseup", () => { keysPressed[bind.key] = false; });
     }
@@ -187,17 +127,8 @@ function setupInputHandlers() {
 }
 
 function saveCurrentLife() {
-  localStorage.setItem("warrior_cat_studio_life_v5", JSON.stringify(catPlayer));
-  
-  // Push validation onto lineages system
-  let lineageExists = pastLineages.some(c => c.name === catPlayer.name && c.clan === catPlayer.clan);
-  if (!lineageExists) {
-    pastLineages.push({ name: catPlayer.name, clan: catPlayer.clan, freshKillPile: catPlayer.freshKillPile });
-    localStorage.setItem("warrior_clans_history_manifest", JSON.stringify(pastLineages));
-  }
-  
-  document.getElementById("live-ticker").innerText = "Advanced cat data and cosmetic profile stored to tracking history layout tables.";
-  AudioEngine.chirp();
+  localStorage.setItem("github_warrior_cat_life_v5", JSON.stringify(catPlayer));
+  document.getElementById("live-ticker").innerText = "Advanced cat data and cosmetic layout saved to local storage profile.";
 }
 
 function runGameLoop() {
@@ -226,14 +157,12 @@ function updateCatPosition() {
     document.getElementById("hud-hunger").innerText = Math.floor(catPlayer.hunger);
     
     if(catPlayer.hunger <= 0) {
-      document.getElementById("live-ticker").innerText = "Starvation warning! Starvation threat! Your cat is exhausted. Consume prey.";
+      document.getElementById("live-ticker").innerText = "Starvation threat! Your cat is exhausted. Return to home grounds to eat.";
     }
-    if(Math.random() > 0.985) AudioEngine.rustle();
   }
 
-  // Bounding block evaluations
-  if (!detectBoxCollisions(nextX, catPlayer.y)) { catPlayer.x = nextX; } else { AudioEngine.thud(); }
-  if (!detectBoxCollisions(catPlayer.x, nextY)) { catPlayer.y = nextY; } else { AudioEngine.thud(); }
+  if (!detectBoxCollisions(nextX, catPlayer.y)) { catPlayer.x = nextX; }
+  if (!detectBoxCollisions(catPlayer.x, nextY)) { catPlayer.y = nextY; }
 
   if (catPlayer.x < 12) catPlayer.x = 12;
   if (catPlayer.x > canvas.width - 12) catPlayer.x = canvas.width - 12;
@@ -285,3 +214,83 @@ function checkPreyIntersections() {
 
     let dist = Math.hypot(catPlayer.x - p.x, catPlayer.y - p.y);
     if (dist < r + p.radius) {
+      p.caught = true;
+      catPlayer.freshKillPile++;
+      catPlayer.hunger = Math.min(100, catPlayer.hunger + 15);
+      
+      document.getElementById("hud-prey").innerText = catPlayer.freshKillPile;
+      document.getElementById("hud-hunger").innerText = Math.floor(catPlayer.hunger);
+      document.getElementById("live-ticker").innerText = `Caught a ${p.type}! Energy restored, fresh-kill value logged into the tracking table.`;
+      
+      setTimeout(() => {
+        p.caught = false;
+        p.x = Math.random() * (canvas.width - 40) + 20;
+        p.y = Math.random() * (canvas.height - 40) + 20;
+      }, 7000);
+    }
+  });
+}
+
+function renderEnvironment() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#1e3516"; ctx.fillRect(0, 0, BORDER_X, 250);
+  ctx.fillStyle = "#153344"; ctx.fillRect(0, 250, BORDER_X, 250);
+  ctx.fillStyle = "#424e3b"; ctx.fillRect(BORDER_X, 0, canvas.width - BORDER_X, 250);
+  ctx.fillStyle = "#1a1c19"; ctx.fillRect(BORDER_X, 250, canvas.width - BORDER_X, 250);
+
+  MAP_OBSTACLES.forEach(obs => {
+    ctx.fillStyle = "rgba(40, 40, 40, 0.85)";
+    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+    ctx.strokeStyle = "#555";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(obs.x, obs.y, obs.width, obs.height);
+  });
+
+  ctx.strokeStyle = "#444";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(BORDER_X, 0); ctx.lineTo(BORDER_X, canvas.height);
+  ctx.moveTo(0, 250); ctx.lineTo(canvas.width, 250);
+  ctx.stroke();
+
+  ctx.fillStyle = "#555";
+  ctx.beginPath(); ctx.arc(BORDER_X, 250, 25, 0, Math.PI * 2); ctx.fill();
+
+  preyEntities.forEach(p => {
+    if (p.caught) return;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  const cx = catPlayer.x;
+  const cy = catPlayer.y;
+  const rad = catPlayer.size;
+
+  if (catPlayer.marking === "white-socks") {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.arc(cx - 12, cy + 10, 5, 0, Math.PI * 2); ctx.arc(cx + 12, cy + 10, 5, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // Base Bicolor Mask rendering choice
+  if (catPlayer.pattern === "bicolor") {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = catPlayer.furColor;
+    ctx.beginPath(); ctx.arc(cx, cy - 3, rad - 3, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.fillStyle = catPlayer.furColor;
+    ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+  }
+
+  ctx.strokeStyle = catPlayer.furColor;
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(cx, cy + 10);
+  if (catPlayer.marking === "docked-tail") { ctx.lineTo(cx - 10, cy + 15); } 
+  else { ctx.lineTo(cx - 18, cy + 22); }
+  ctx.stroke();
+
+  // Draw Coat Variants
